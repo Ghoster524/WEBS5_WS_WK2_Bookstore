@@ -19,48 +19,59 @@ Book = mongoose.model('Book');
 	// Ten slotte, een moeilijkere (door Async methodes)
 	- Population: Vul alle autors van het boek
 */
-function getBooks(req, res){
-    var query = {};
-    if (req.query.topCategories) {
-        Book.aggregate([{
-            $group: {
-                _id: "$category",
-                count: { $sum: 1 }
-            }
-        }]).sort({ count: -1 })
-            .limit(parseInt(req.query.topCategories))
-            .then(result => {
-                var categories = [];
-                for (var i = 0; i < result.length; i++) { categories.push(result[i]._id); }
+function getBooks(req, res) {
+  var query = {};
+  if (req.query.topCategories) {
+    Book.aggregate([{
+        $group: {
+          _id: '$category',
+          count: { $sum: 1 },
+        },
+      }])
+      .sort({ count: -1 })
+      .limit(parseInt(req.query.topCategories))
+      .then(result => {
+        var categories = [];
+        for (var i = 0; i < result.length; i++) {
+          categories.push(result[i]._id);
+        }
 
-                Book.find()
-                    .where('category')
-                    .in(categories)
-                    .then(books => { res.json(books); });
-            }).catch(err => { console.log(err); return handleError(req, res, 500, err) });
+        Book.find()
+          .where('category')
+          .in(categories)
+          .then(books => {
+            res.json(books);
+          });
+      })
+      .catch(err => {
+        console.log(err);
+        return handleError(req, res, 500, err);
+      });
 
-        return;
-    }
+    return;
+  }
 
-	if(req.params.id){
-        query._id = req.params.id.toLowerCase();
-    } 
+  if (req.params.id) {
+    query._id = req.params.id.toLowerCase();
+  }
 
-    Book.find(query)
-        .then(data => { res.json(data); })
-        .catch(err => handleError(req, res, 500, err));
+  Book.find(query)
+    .then(data => {
+      res.json(data);
+    })
+    .catch(err => handleError(req, res, 500, err));
 }
 
 // Routing
 router.route('/')
-	.get(getBooks);
+  .get(getBooks);
 
 router.route('/:id')
-	.get(getBooks);
+  .get(getBooks);
 
 // Export
-module.exports = function (errCallback){
-	console.log('Initializing books routing module');
-	handleError = errCallback;
-	return router;
+module.exports = function (errCallback) {
+  console.log('Initializing books routing module');
+  handleError = errCallback;
+  return router;
 };

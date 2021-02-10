@@ -13,34 +13,34 @@ Book = mongoose.model('Book');
 	TODO: 9 - Filtering: QueryString variabele: country
 	TODO: 10 - Filtering: QueryString variabele: fullName
 */
-function getAuthors(req, res){
-	var query = {};
-	if(req.params.id){
-		query._id = req.params.id;
-	} 
+function getAuthors(req, res) {
+  var query = {};
+  if (req.params.id) {
+    query._id = req.params.id;
+  }
 
-	var result = Author.find(query);
+  var result = Author.find(query);
 
-	result
-		.then(data => {
-			// We hebben gezocht op id, dus we gaan geen array teruggeven.
-			if(req.params.id){
-				data = data[0];
-			}
-			return res.json(data);
-		})
-		.catch(err => handleError(req, res, 500, err));
+  result
+    .then(data => {
+      // We hebben gezocht op id, dus we gaan geen array teruggeven.
+      if (req.params.id) {
+        data = data[0];
+      }
+      return res.json(data);
+    })
+    .catch(err => handleError(req, res, 500, err));
 }
 
-function addAuthor(req, res){
-	var author = new Author(req.body);
-	author
-		.save()
-		.then(savedAuthor => {
-			res.status(201);
-			res.json(savedAuthor);
-		})
-		.catch(err => handleError(req, res, 500, err));
+function addAuthor(req, res) {
+  var author = new Author(req.body);
+  author
+    .save()
+    .then(savedAuthor => {
+      res.status(201);
+      res.json(savedAuthor);
+    })
+    .catch(err => handleError(req, res, 500, err));
 }
 
 /*
@@ -51,8 +51,8 @@ function addAuthor(req, res){
 		- Author met nieuw book teruggeven
 		- Mocht iets van dit mis gaan dan handleError(req, res, statusCode, err) aanroepen
 */
-function addBook(req, res){
-	res.json({});
+function addBook(req, res) {
+  res.json({});
 }
 
 /*
@@ -63,28 +63,28 @@ function addBook(req, res){
 		- Author zonder betreffende book teruggeven
 		- Mocht iets van dit mis gaan dan handleError(req, res, statusCode, err) aanroepen
 */
-function deleteBook(req, res){
-	res.json({});
+function deleteBook(req, res) {
+  res.json({});
 }
 
 // Routing
 router.route('/')
-	.get(getAuthors)
-	.post(addAuthor);
+  .get(getAuthors)
+  .post(addAuthor);
 
 router.route('/:id')
-	.get(getAuthors);
+  .get(getAuthors);
 
 router.route('/:id/books')
-	.post(addBook);
+  .post(addBook);
 
 router.route('/:id/books/:bookId')
-	.delete(deleteBook);
+  .delete(deleteBook);
 
 // Export
-module.exports = function (errCallback){
-	console.log('Initializing authors routing module');
-	
-	handleError = errCallback;
-	return router;
+module.exports = function (errCallback) {
+  console.log('Initializing authors routing module');
+
+  handleError = errCallback;
+  return router;
 };
